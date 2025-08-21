@@ -23,6 +23,64 @@
 
 
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #005990;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: white;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    thead {
+      background-color: #005990;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .event-name {
+      font-family: monospace;
+      font-weight: bold;
+      color: #d63384;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .triggered {
+      background-color: #d1e7dd !important;
+      /* Light green for triggered rows */
+    }
+
+    .triggered .status {
+      color: #0f5132;
+    }
+  </style>
 </head>
 
 <body>
@@ -32,6 +90,23 @@
   <script src="js/app.js"></script>
 
   <!--img src="https://driftinginandoutofsteel.wordpress.com/wp-content/uploads/2017/02/solong.jpg" -->
+
+  <h1>Salesforce Embedded Messaging Event Log</h1>
+  <p>Interact with the chat widget to see the events below update in real-time.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Event Name</th>
+        <th>Status</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody id="event-log-body">
+    </tbody>
+  </table>
+
+
   <script type='text/javascript'>
     function initEmbeddedMessaging() {
       try {
@@ -104,6 +179,58 @@
     );
   </script>
 
+
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // List of all events from the Salesforce documentation
+      const salesforceEvents = [
+        "onAgentEndChat", "onAgentTyping", "onChatButtonStateChange", "onChatEnded",
+        "onChatEstablished", "onChatMenuDisplayed", "onChatMessageReceived", "onCustomEvent",
+        "onEmbeddedMessagingReady", "onFileTransfer", "onFocus", "onHide", "onLaunch",
+        "onMaximize", "onMinimize", "onNewMessage", "onPageTitleNotification",
+        "onPrechatSubmit", "onShow", "onUserStartTyping", "onUserStopTyping",
+        "onUserVerification", "onWaitingForAgent", "onWelcome"
+      ];
+
+      const tableBody = document.getElementById('event-log-body');
+
+      // 1. Populate the table with all events in their initial state
+      salesforceEvents.forEach(eventName => {
+        const row = document.createElement('tr');
+        row.id = `row-${eventName}`; // Give each row a unique ID
+
+        row.innerHTML = `
+          <td class="event-name">${eventName}</td>
+          <td class="status" id="status-${eventName}">Not Triggered</td>
+          <td id="time-${eventName}">---</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      // 2. Create a function to handle event updates
+      const logEventHandler = (event) => {
+        const eventName = event.type;
+        console.log(`Event Fired: ${eventName}`, event.detail || '(No data)');
+
+        const row = document.getElementById(`row-${eventName}`);
+        const statusCell = document.getElementById(`status-${eventName}`);
+        const timeCell = document.getElementById(`time-${eventName}`);
+
+        if (row && statusCell && timeCell) {
+          row.classList.add('triggered');
+          statusCell.textContent = '✅ Triggered';
+          timeCell.textContent = new Date().toLocaleTimeString();
+        }
+      };
+
+      // 3. Add a listener for each event
+      salesforceEvents.forEach(eventName => {
+        window.addEventListener(eventName, logEventHandler);
+      });
+    });
+  </script>
 
 </body>
 

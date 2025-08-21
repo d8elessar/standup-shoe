@@ -181,41 +181,61 @@
 
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // List of all events from the Salesforce documentation
+    // This is the main entry point. It ensures the SF script is fully loaded.
+    window.addEventListener('onEmbeddedMessagingReady', () => {
+      console.log('Salesforce Messaging is Ready. Setting up event logger...');
+
+      // --- All of your event table logic now goes inside here ---
       const salesforceEvents = [
-        "onAgentEndChat", "onAgentTyping", "onChatButtonStateChange", "onChatEnded",
-        "onChatEstablished", "onChatMenuDisplayed", "onChatMessageReceived", "onCustomEvent",
-        "onEmbeddedMessagingReady", "onFileTransfer", "onFocus", "onHide", "onLaunch",
-        "onMaximize", "onMinimize", "onNewMessage", "onPageTitleNotification",
-        "onPrechatSubmit", "onShow", "onUserStartTyping", "onUserStopTyping",
-        "onUserVerification", "onWaitingForAgent", "onWelcome"
+        "onEmbeddedMessagingBusinessHoursEnded",
+        "onEmbeddedMessagingBusinessHoursStarted",
+        "onEmbeddedMessagingButtonCreated",
+        "onEmbeddedMessagingButtonClicked",
+        "onEmbeddedMessagingConversationClosed",
+        "onEmbeddedMessagingConversationOpened",
+        "onEmbeddedMessagingConversationParticipantChanged",
+        "onEmbeddedMessagingConversationRouted",
+        "onEmbeddedMessagingConversationStarted",
+        "onEmbeddedMessageDelivered",
+        "onEmbeddedMessagingIdentityTokenExpired",
+        "onEmbeddedMessagingIdentityTokenExpired",
+        "onEmbeddedMessagingIdentityTokenExpired",
+        "onEmbeddedMessagingIdentityTokenExpired",
+        "onEmbeddedMessagingPreChatLoaded",
+        "onEmbeddedMessagingPreChatSubmitted",
+        "onEmbeddedMessageLinkClicked",
+        "onEmbeddedMessageRead",
+        "onEmbeddedMessagingReady",
+        "onEmbeddedMessageSent",
+        "onEmbeddedMessagingTranscriptDownloadSuccessful",
+        "onEmbeddedMessagingTranscriptRequested",
+        "onEmbeddedMessagingTranscriptRequestFailed",
+        "onEmbeddedMessagingWindowClosed",
+        "onEmbeddedMessagingWindowMinimized",
+        "onEmbeddedMessagingWindowMaximized"
       ];
 
       const tableBody = document.getElementById('event-log-body');
 
-      // 1. Populate the table with all events in their initial state
+      // 1. Populate the table
       salesforceEvents.forEach(eventName => {
         const row = document.createElement('tr');
-        row.id = `row-${eventName}`; // Give each row a unique ID
-
+        row.id = `row-${eventName}`;
         row.innerHTML = `
-          <td class="event-name">${eventName}</td>
-          <td class="status" id="status-${eventName}">Not Triggered</td>
-          <td id="time-${eventName}">---</td>
-        `;
+        <td class="event-name">${eventName}</td>
+        <td class="status" id="status-${eventName}">Not Triggered</td>
+        <td id="time-${eventName}">---</td>
+      `;
         tableBody.appendChild(row);
       });
 
-      // 2. Create a function to handle event updates
+      // 2. Create the handler function
       const logEventHandler = (event) => {
         const eventName = event.type;
         console.log(`Event Fired: ${eventName}`, event.detail || '(No data)');
-
         const row = document.getElementById(`row-${eventName}`);
         const statusCell = document.getElementById(`status-${eventName}`);
         const timeCell = document.getElementById(`time-${eventName}`);
-
         if (row && statusCell && timeCell) {
           row.classList.add('triggered');
           statusCell.textContent = '✅ Triggered';
@@ -223,11 +243,41 @@
         }
       };
 
-      // 3. Add a listener for each event
+      // 3. Add a listener for each event (NOW it will work correctly)
       salesforceEvents.forEach(eventName => {
         window.addEventListener(eventName, logEventHandler);
       });
+
+      // Manually trigger the 'onEmbeddedMessagingReady' event in our table since we are inside it
+      logEventHandler({ type: 'onEmbeddedMessagingReady' });
     });
+
+    // This proactive chat logic can remain separate, as it listens for a different event.
+    window.addEventListener(
+      "onEmbeddedMessagingButtonCreated", () => {
+        console.log('Button Created. Waiting for user to use the mouse wheel.');
+        let isActionTriggered = false;
+
+        const handleWheelAction = (event) => {
+          if (isActionTriggered) return;
+          isActionTriggered = true;
+
+          console.log('Wheel event detected. Showing chat button.');
+          embeddedservice_bootstrap.utilAPI.showChatButton();
+
+          setTimeout(() => {
+            console.log('Timer finished. Launching chat.');
+            embeddedservice_bootstrap.utilAPI.launchChat()
+              .then(() => console.log('Chat launched successfully.'))
+              .catch((err) => console.error('Chat launch failed.', err));
+          }, 5000);
+
+          window.removeEventListener('wheel', handleWheelAction);
+        };
+
+        window.addEventListener('wheel', handleWheelAction);
+      }
+    );
   </script>
 
 </body>

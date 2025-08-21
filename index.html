@@ -136,45 +136,43 @@
   <script>
     window.addEventListener(
       "onEmbeddedMessagingButtonCreated", () => {
-        console.log('Button Created. Waiting for user to scroll.');
+        console.log('Button Created. Waiting for user to use the mouse wheel.');
 
-        let scrollCount = 0;
-        let isChatButtonShown = false;
-        const scrollThreshold = 50; // This is not 50 scrolls, but 50 events.
+        // 1. Create a flag to make sure our code only runs ONCE.
+        let isActionTriggered = false;
 
-        // Define the function that will handle the scroll event
-        const handleScroll = () => {
-          scrollCount++;
-
-          // Check if the scroll count has been met AND if the button isn't already visible
-          if (scrollCount >= scrollThreshold && !isChatButtonShown) {
-
-            // Set the flag to true to prevent this from running again
-            isChatButtonShown = true;
-
-            console.log('Scroll threshold reached. Showing chat button.');
-            embeddedservice_bootstrap.utilAPI.showChatButton();
-
-            // For efficiency, remove the scroll listener now that its job is done
-            window.removeEventListener('scroll', handleScroll);
-
-            // --- Start a 5-second timer to launch the chat ---
-            console.log('Starting 5-second timer to launch chat...');
-            setTimeout(() => {
-              console.log('Timer finished. Launching chat.');
-              embeddedservice_bootstrap.utilAPI.launchChat()
-                .then(() => {
-                  console.log('Chat launched successfully.');
-                })
-                .catch((err) => {
-                  console.error('Chat launch failed.', err);
-                });
-            }, 5000); // 5000 milliseconds = 5 seconds
+        // 2. Define the event handler as a NAMED function so we can remove it later.
+        const handleWheelAction = (event) => {
+          // If the action has already been triggered, do nothing.
+          if (isActionTriggered) {
+            return;
           }
+
+          // Set the flag to true immediately to prevent this from running again.
+          isActionTriggered = true;
+
+          console.log('Wheel event detected. Showing chat button.');
+          embeddedservice_bootstrap.utilAPI.showChatButton();
+
+          // --- Start a 5-second timer to launch the chat ---
+          console.log('Starting 5-second timer to launch chat...');
+          setTimeout(() => {
+            console.log('Timer finished. Launching chat.');
+            embeddedservice_bootstrap.utilAPI.launchChat()
+              .then(() => {
+                console.log('Chat launched successfully.');
+              })
+              .catch((err) => {
+                console.error('Chat launch failed.', err);
+              });
+          }, 5000); // 5000 milliseconds = 5 seconds
+
+          // 3. For efficiency, correctly remove the listener now that its job is done.
+          window.removeEventListener('wheel', handleWheelAction);
         };
 
-        // Add the scroll event listener to the window
-        window.addEventListener('scroll', handleScroll);
+        // 4. Add the event listener to the window.
+        window.addEventListener('wheel', handleWheelAction);
       }
     );
   </script>

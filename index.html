@@ -20,8 +20,8 @@
 
   <link rel="manifest" href="site.webmanifest">
   <meta name="theme-color" content="#fafafa">
-  
-  
+
+
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 </head>
 
@@ -30,9 +30,59 @@
   <!-- Add your site or application content here -->
   <p>Hello world! This is HTML5 Boilerplate.</p>
   <script src="js/app.js"></script>
-  
- <img src="https://driftinginandoutofsteel.wordpress.com/wp-content/uploads/2017/02/solong.jpg" >
 
+  <!--img src="https://driftinginandoutofsteel.wordpress.com/wp-content/uploads/2017/02/solong.jpg" -->
+  <script type='text/javascript'>
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'de'; // For example, enter 'en' or 'en-US'
+        embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
+
+        embeddedservice_bootstrap.init(
+          '00D9O00000HhV0L',
+          'OXG_Web_Deployment',
+          'https://oxg--uat.sandbox.my.site.com/ESWOXGChannel1753267383010',
+          {
+            scrt2URL: 'https://oxg--uat.sandbox.my.salesforce-scrt.com'
+          }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+      }
+    };
+  </script>
+  <script type='text/javascript'
+    src='https://oxg--uat.sandbox.my.site.com/ESWOXGChannel1753267383010/assets/js/bootstrap.min.js'
+    onload='initEmbeddedMessaging()'></script>
+
+  <script>
+
+    window.addEventListener(
+      "onEmbeddedMessagingButtonCreated", () => {
+        console.log(
+          'Inside Button Created'
+        );
+
+        // Delay initialization by 5 seconds after page load
+        setTimeout(() => {
+          embeddedservice_bootstrap.utilAPI.launchChat().then(() => {
+            console.log(
+              'Inside then block'
+            );
+          }).catch(() => {
+            console.log(
+              'Inside catch block'
+            );
+          }).finally(() => {
+            console.log(
+              'Inside finally block'
+            );
+          });
+        }, 5000);
+      }
+    );
+
+  </script>
 
 
 </body>

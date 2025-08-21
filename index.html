@@ -55,33 +55,53 @@
     src='https://oxg--uat.sandbox.my.site.com/ESWOXGChannel1753267383010/assets/js/bootstrap.min.js'
     onload='initEmbeddedMessaging()'></script>
 
-  <script>
 
+
+
+  <script>
     window.addEventListener(
       "onEmbeddedMessagingButtonCreated", () => {
-        console.log(
-          'Inside Button Created'
-        );
+        console.log('Button Created. Waiting for user to scroll.');
 
-        // Delay initialization by 5 seconds after page load
-        setTimeout(() => {
-          embeddedservice_bootstrap.utilAPI.showChatButton().then(() => {
-            console.log(
-              'Inside then block'
-            );
-          }).catch(() => {
-            console.log(
-              'Inside catch block'
-            );
-          }).finally(() => {
-            console.log(
-              'Inside finally block'
-            );
-          });
-        }, 5000);
+        let scrollCount = 0;
+        let isChatButtonShown = false;
+        const scrollThreshold = 50; // This is not 50 scrolls, but 50 events.
+
+        // Define the function that will handle the scroll event
+        const handleScroll = () => {
+          scrollCount++;
+
+          // Check if the scroll count has been met AND if the button isn't already visible
+          if (scrollCount >= scrollThreshold && !isChatButtonShown) {
+
+            // Set the flag to true to prevent this from running again
+            isChatButtonShown = true;
+
+            console.log('Scroll threshold reached. Showing chat button.');
+            embeddedservice_bootstrap.utilAPI.showChatButton();
+
+            // For efficiency, remove the scroll listener now that its job is done
+            window.removeEventListener('scroll', handleScroll);
+
+            // --- Start a 5-second timer to launch the chat ---
+            console.log('Starting 5-second timer to launch chat...');
+            setTimeout(() => {
+              console.log('Timer finished. Launching chat.');
+              embeddedservice_bootstrap.utilAPI.launchChat()
+                .then(() => {
+                  console.log('Chat launched successfully.');
+                })
+                .catch((err) => {
+                  console.error('Chat launch failed.', err);
+                });
+            }, 5000); // 5000 milliseconds = 5 seconds
+          }
+        };
+
+        // Add the scroll event listener to the window
+        window.addEventListener('scroll', handleScroll);
       }
     );
-
   </script>
 
 

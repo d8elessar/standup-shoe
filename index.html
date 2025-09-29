@@ -112,14 +112,14 @@
       try {
         embeddedservice_bootstrap.settings.language = 'de'; // For example, enter 'en' or 'en-US'
         embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
-		embeddedservice_bootstrap.settings.enableUserInputForConversationWithBot = false;
+		    embeddedservice_bootstrap.settings.enableUserInputForConversationWithBot = false;
 
         embeddedservice_bootstrap.init(
-          '00D9O00000HhV0L',
+          '00D2o000000jY10',
           'OXG_Web_Deployment',
-          'https://oxg--uat.sandbox.my.site.com/ESWOXGChannel1753267383010',
+          'https://oxg.my.site.com/ESWOXGChannel1753267383010',
           {
-            scrt2URL: 'https://oxg--uat.sandbox.my.salesforce-scrt.com'
+            scrt2URL: 'https://oxg.my.salesforce-scrt.com'
           }
         );
       } catch (err) {
@@ -127,9 +127,9 @@
       }
     };
   </script>
-  <script type='text/javascript'
-    src='https://oxg--uat.sandbox.my.site.com/ESWOXGChannel1753267383010/assets/js/bootstrap.min.js'
+  <script type='text/javascript' src='https://oxg.my.site.com/ESWOXGChannel1753267383010/assets/js/bootstrap.min.js'
     onload='initEmbeddedMessaging()'></script>
+
 
 
 

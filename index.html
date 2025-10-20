@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <title>Salesforce Embedded Messaging - Language Setup</title>
   <link rel="stylesheet" href="css/style.css">
   <meta name="description" content="">
 
@@ -80,18 +80,27 @@
     .triggered .status {
       color: #0f5132;
     }
+
+    .info-box {
+      background-color: #e7f3ff;
+      border-left: 4px solid #005990;
+      padding: 15px;
+      margin: 20px 0;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
-  <script src="js/app.js"></script>
+  <h1>Salesforce Embedded Messaging Event Log</h1>
 
   <!--img src="https://driftinginandoutofsteel.wordpress.com/wp-content/uploads/2017/02/solong.jpg" -->
 
-  <h1>Salesforce Embedded Messaging Event Log</h1>
+  <div class="info-box">
+    <strong>Language Configuration:</strong> The chat widget is configured for German (de) language.
+    The language will be sent as a hidden pre-chat field for routing purposes.
+  </div>
+
   <p>Interact with the chat widget to see the events below update in real-time.</p>
 
   <table>
@@ -106,19 +115,11 @@
     </tbody>
   </table>
 
-
-  <script type='text/javascript'>
-    window.addEventListener("onEmbeddedMessagingReady", () => {
-      embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-        "Language": embeddedservice_bootstrap.settings.language
-      });
-    });
-
-  </script>
-
+  <!-- Salesforce Embedded Messaging Initialization -->
   <script type='text/javascript'>
     function initEmbeddedMessaging() {
       try {
+        // Set the language for the UI
         embeddedservice_bootstrap.settings.language = 'de'; // For example, enter 'en' or 'en-US'
         embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
         embeddedservice_bootstrap.settings.enableUserInputForConversationWithBot = false;
@@ -136,12 +137,31 @@
       }
     };
   </script>
+
   <script type='text/javascript'
     src='https://oxg--uat.sandbox.my.site.com/ESWOXGChannel1753267383010/assets/js/bootstrap.min.js'
-    onload='initEmbeddedMessaging()'></script>
+    onload='initEmbeddedMessaging()'>
+    </script>
 
+  <!-- Set Hidden Pre-Chat Fields for Language -->
+  <script type='text/javascript'>
+    window.addEventListener("onEmbeddedMessagingReady", () => {
+      console.log('Embedded Messaging Ready - Setting up language configuration');
 
-
+      // Set the hidden pre-chat field for Language
+      // This MUST match the API name of your Pre-Chat Field in Salesforce
+      try {
+        embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+          "Language": embeddedservice_bootstrap.settings.language
+        });
+        console.log('Hidden pre-chat field set:', {
+          Language: embeddedservice_bootstrap.settings.language
+        });
+      } catch (err) {
+        console.error('Error setting hidden pre-chat fields:', err);
+      }
+    });
+  </script>
 
   <script>
     window.addEventListener(
@@ -207,9 +227,6 @@
         "onEmbeddedMessagingConversationRouted",
         "onEmbeddedMessagingConversationStarted",
         "onEmbeddedMessageDelivered",
-        "onEmbeddedMessagingIdentityTokenExpired",
-        "onEmbeddedMessagingIdentityTokenExpired",
-        "onEmbeddedMessagingIdentityTokenExpired",
         "onEmbeddedMessagingIdentityTokenExpired",
         "onEmbeddedMessagingPreChatLoaded",
         "onEmbeddedMessagingPreChatSubmitted",

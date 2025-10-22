@@ -152,10 +152,12 @@
       // This MUST match the API name of your Pre-Chat Field in Salesforce
       try {
         embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-          "Language": embeddedservice_bootstrap.settings.language
+          "Language": embeddedservice_bootstrap.settings.language,
+          "EndUserLanguage": embeddedservice_bootstrap.settings.language
         });
         console.log('Hidden pre-chat field set:', {
-          Language: embeddedservice_bootstrap.settings.language
+          Language: embeddedservice_bootstrap.settings.language,
+          EndUserLanguage: embeddedservice_bootstrap.settings.language
         });
       } catch (err) {
         console.error('Error setting hidden pre-chat fields:', err);
